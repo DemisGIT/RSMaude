@@ -17,7 +17,7 @@ This repository includes an implementation of Reactions Systems in Maude that fo
 
 whose preliminary version can be found [here](https://users.dimi.uniud.it/~demis.ballis)
 
-More specifically, it includes the following two Maude specificantions:
+More specifically, it includes the following two Maude specifications:
 
 1. **RS-semantics.maude**: this specification provides an executable semantics for reaction systems that supports exploration and analysis of RSs.
 2. **FWDslicer.maude**: this specification implements a forward slicing algorithm for RSs. Forward slicing is a powerful tool to detect (forward) causality and influence relations among the entities produced in a biological model. It shows how (parts of) an initial input affect the production of (parts of) the output and helps estimate which input data need to be modified to accomplish a change in the outcome.
@@ -26,7 +26,7 @@ This way the two processes can be easily compared and some errors and/or causali
 
 These Maude specifications can be executed either
 
-- in the Maude system which can be downloaded at [https://maude.cs.illinois.edu/w/index.php/The_Maude_System](https://maude.cs.illinois.edu/w/index.php/The_Maude_System)
+- in the Maude system that can be downloaded at [https://maude.cs.illinois.edu/w/index.php/The_Maude_System](https://maude.cs.illinois.edu/w/index.php/The_Maude_System)
 
 or
 
