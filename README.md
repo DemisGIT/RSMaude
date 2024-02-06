@@ -30,7 +30,9 @@ These Maude specifications can be executed either
 
 or
 
-- the ANIMA system ---a visual program explorer for Maude computations which is publicly available
+- in the ANIMA system ---a visual program explorer for Maude computations which is publicly available
 at [https://safe-tools.dsic.upv.es/anima/](https://safe-tools.dsic.upv.es/anima/). In ANIMA, system biologists can stepwise explore the computation space
 of a reaction system by expanding state transitions one at a time with a simple point-and-click interface, thereby producing an incremental visual representation
 of the whole computation tree w.r.t. a given initial state. 
+To reproduce the examples of a gene regulatory network and its forward slicing in ANIMA, please select
+the preloaded examples GENE-REGULATION-RS and GENE-REGULATION-RS-FWD-SLICING, respectively. 
