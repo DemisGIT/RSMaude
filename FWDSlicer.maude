@@ -41,7 +41,22 @@ fmod ENTITY-REACTION-TYPES is
     sorts Reaction Reactions State . 
     subsort Reaction < Reactions .
   
-  
+    op empty : -> Reactions [ctor] .
+    op _;_ : Reactions Reactions -> Reactions [ctor assoc id: empty] .
+	
+	var R R' : Reactions .
+	var r r' : Reaction .
+    op _\_ : Reactions Reactions -> Reactions .
+	op _in_ : Reaction Reactions -> Bool .
+	
+	eq r in empty = false .
+	eq r in r' ; R = if (r == r') then true else r in R fi .
+	eq empty \ R' = empty .
+	eq (r ; R) \ R' = if (r in R' == false) then r ; (R \ R')
+                                            else (R \ R') fi .
+	
+	
+	
     op [_,_,_] : Entities Entities Entities -> Reaction [ctor] .
     op fail : -> Reaction [ctor] .
 	
@@ -78,13 +93,12 @@ fmod ENTITY-REACTION-TYPES is
             [ stat1h, gata3, tbeth ] ;
             [ il12r il18r, gata3, s4ir ] .
   
-    --- _;_ models list of Reactions 
-    op empty : -> Reactions [ctor] .
-    op _;_ : Reactions Reactions -> Reactions [ctor assoc id: empty] .
+
   
     op <_|_|_|_|_> : Reactions Entities Reactions Entities Reactions -> State [ctor] .
     op <_|_|_|_> : Reactions Entities Reactions Entities -> State [ctor] .
-    op -{_} +{_} : Entities Entities -> State [ctor] .
+    op +<_|_> : Reactions Entities -> State [ctor] .
+	op -<_|_> : Reactions Entities -> State [ctor] .
 endfm  
 	
 mod FORWARDSLICER-RS is
@@ -123,19 +137,31 @@ mod FORWARDSLICER-RS is
  vars D	D' D-new D-new' : Entities .
  vars Au Au-new Au' Au-new' : Reactions .
  				
- crl [process] : < A | D | Au | D' | Au' > => 
+ crl [process-fs] : < A | D | Au | D' | Au' > => 
                  < A | D-new | Au-new | D-new' | Au-new' > if 
 				               { Au-new' | D-new' } := applyAll+(A, D') /\
 							   { Au-new | D-new } := applyAll+(A, D) .
-							 
- rl [slice] : < A | D | Au | D' | Au' > => 
-              < Au | D | Au' | D' > .							      
-			  										     
- rl [diff] : < A | D | Au | D' | Au' > => 
-             -{ D \ D' } +{ D' \ D } .
-			 										  
-endm
---- ANIMA
-rew [4] < [ stat4 , irak s4ir tbeth, ifngammam ] ; [ tbetm, irak s4ir, ifngammam ] ; [ tbetm, s4ir tbeth, ifngammam ] ; [ stat4 tbetm , s4ir , ifngammam  ] ; [ stat4 tbetm, irak tbeth, ifngammam ] ; [ stat4 irak, empty, ifngammah ] ; [ tbeth, empty, ifngammah ] ; [ gata3, stat1h stat1m, il4 ] ; [ ifngammam, empty, ifngammarm ] ; [ ifngammah socs1, empty, ifngammarm ] ; [ ifngammah, socs1, ifngammarh ] ; [ il4, socs1, il4r ] ; [ il12, stat6, il12r ] ; [ il18, stat6, il18r ] ; [ ifnbeta, empty, ifnbetar ] ; [ ifnbetar, ifngammarh, stat1m ] ; [ ifngammarm, empty, stat1m ] ; [ ifngammarh, empty, stat1h ] ; [ il4r, empty, stat6 ] ; [ il12r, gata3, stat4 ] ; [ il18r, empty, irak ] ; [ stat1h, empty, socs1 ] ; [ stat1m, empty, socs1 ] ; [ tbeth, empty, socs1 ] ; [ tbetm, empty, socs1 ] ; [ stat6, tbeth tbetm, gata3 ] ; [ gata3, tbeth tbetm, gata3 ] ; [ tbetm, tbeth gata3 stat1h, tbetm ] ; [ stat1m, tbeth gata3 stat1h, tbetm ] ; [ tbeth, gata3, tbeth ] ; [ stat1h, gata3, tbeth ] ; [ il12r il18r, gata3, s4ir ] | ifngammah gata3 | empty | ifngammah | empty > .
+							 							     						     
+ rl [slice+] : < A | D | Au | D' | Au' > => +< (Au' \ Au) | D' \ D > .
 
---- rew [1] < GR | stat1h gata3 | stat1h | empty | empty > .
+ rl [slice-] : < A | D | Au | D' | Au' > => -< (Au \ Au') | D \ D' > .			 										  
+endm
+--- Forward slicing of a context-independent process: detection 
+--- of spurious entities
+
+---(
+search [1,6] < [ stat4 , irak s4ir tbeth, ifngammam ] ; [ tbetm, irak s4ir, ifngammam ] ; [ tbetm, s4ir tbeth, ifngammam ] ; [ stat4 tbetm , s4ir , ifngammam  ] ; [ stat4 tbetm, irak tbeth, ifngammam ] ; [ stat4 irak, empty, ifngammah ] ; [ tbeth, empty, ifngammah ] ; [ gata3, stat1h stat1m, il4 ] ; [ ifngammam, empty, ifngammarm ] ; [ ifngammah socs1, empty, ifngammarm ] ; [ ifngammah, socs1, ifngammarh ] ; [ il4, socs1, il4r ] ; [ il12, stat6, il12r ] ; [ il18, stat6, il18r ] ; [ ifnbeta, empty, ifnbetar ] ; [ ifnbetar, ifngammarh, stat1m ] ; [ ifngammarm, empty, stat1m ] ; [ ifngammarh, empty, stat1h ] ; [ il4r, empty, stat6 ] ; [ il12r, gata3, stat4 ] ; [ il18r, empty, irak ] ; [ stat1h, empty, socs1 ] ; [ stat1m, empty, socs1 ] ; [ tbeth, empty, socs1 ] ; [ tbetm, empty, socs1 ] ; [ stat6, tbeth tbetm, gata3 ] ; [ gata3, tbeth tbetm, gata3 ] ; [ tbetm, tbeth gata3 stat1h, tbetm ] ; [ stat1m, tbeth gata3 stat1h, tbetm ] ; [ tbeth, gata3, tbeth ] ; [ stat1h, gata3, tbeth ] ; [ il12r il18r, gata3, s4ir ] | ifngammah gata3 | empty | ifngammah | empty > 
+=>* +< RS:Reactions | PS:Entities > such that RS:Reactions =/= empty .
+)
+
+--- Forward slicing of a context-independent process: detection 
+--- of missing entities
+---(
+search [1,6] < [ stat4 , irak s4ir tbeth, ifngammam ] ; [ tbetm, irak s4ir, ifngammam ] ; [ tbetm, s4ir tbeth, ifngammam ] ; [ stat4 tbetm , s4ir , ifngammam  ] ; [ stat4 tbetm, irak tbeth, ifngammam ] ; [ stat4 irak, empty, ifngammah ] ; [ tbeth, empty, ifngammah ] ; [ gata3, stat1h stat1m, il4 ] ; [ ifngammam, empty, ifngammarm ] ; [ ifngammah socs1, empty, ifngammarm ] ; [ ifngammah, socs1, ifngammarh ] ; [ il4, socs1, il4r ] ; [ il12, stat6, il12r ] ; [ il18, stat6, il18r ] ; [ ifnbeta, empty, ifnbetar ] ; [ ifnbetar, ifngammarh, stat1m ] ; [ ifngammarm, empty, stat1m ] ; [ ifngammarh, empty, stat1h ] ; [ il4r, empty, stat6 ] ; [ il12r, gata3, stat4 ] ; [ il18r, empty, irak ] ; [ stat1h, empty, socs1 ] ; [ stat1m, empty, socs1 ] ; [ tbeth, empty, socs1 ] ; [ tbetm, empty, socs1 ] ; [ stat6, tbeth tbetm, gata3 ] ; [ gata3, tbeth tbetm, gata3 ] ; [ tbetm, tbeth gata3 stat1h, tbetm ] ; [ stat1m, tbeth gata3 stat1h, tbetm ] ; [ tbeth, gata3, tbeth ] ; [ stat1h, gata3, tbeth ] ; [ il12r il18r, gata3, s4ir ] | ifngammah gata3 | empty | ifngammah | empty > 
+=>* -< RS:Reactions | PS:Entities > such that RS:Reactions =/= empty .
+)
+
+--- Application of the Gene Regulatory Network reactions to
+--- the set of entitites {stat1h,gata3}.
+
+--- red applyAll+(GR,stat1h gata3) .
