@@ -35,4 +35,4 @@ at [https://safe-tools.dsic.upv.es/anima/](https://safe-tools.dsic.upv.es/anima/
 of a reaction system by expanding state transitions one at a time with a simple point-and-click interface, thereby producing an incremental visual representation
 of the whole computation tree w.r.t. a given initial state. 
 To reproduce the examples of a gene regulatory network and its forward slicing in ANIMA, please select
-the preloaded examples GENE-REGULATION-RS and GENE-REGULATION-RS-FWD-SLICING, respectively. 
+the preloaded examples *Gene-Regulation-RS* and *Forward Slicing of Gene-Regulation-RS*, respectively. 
