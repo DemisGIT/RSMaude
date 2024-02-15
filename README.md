@@ -15,7 +15,7 @@ This repository includes an implementation of Reactions Systems in Maude that fo
 
 > D. Ballis, L. Brodo, M. Falaschi - Modeling and Analyzing Reaction Systems in Maude
 
-whose preliminary version can be found [here](https://users.dimi.uniud.it/~demis.ballis)
+whose preliminary version can be found [here](https://users.dimi.uniud.it/~demis.ballis/electronicsDraft.pdf)
 
 More specifically, it includes the following two Maude specifications:
 
